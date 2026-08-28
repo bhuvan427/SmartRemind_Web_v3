@@ -2,6 +2,10 @@
 
 A modern Python/FastAPI + HTML/CSS/JavaScript prototype using **MySQL**. Location, weather and battery are collected automatically when the browser/device exposes them.
 
+## Abstract
+
+SmartRemind is a context-aware reminder web application that helps users remember tasks based on where they are and the conditions around them. Users can save places or use their current GPS location, then create reminders with location radius, weather, battery, and time-window rules. The application continuously checks the available context and sends notifications when all selected conditions are satisfied. Proximity-based alerts provide one notification within 1 kilometre and two notifications when the user is within 200 metres. FastAPI provides the backend API, while the HTML/CSS/JavaScript frontend provides the interactive dashboard. MySQL is supported for production, and SQLite fallback is available for quick local testing. The project is intended as an educational prototype and demonstrates practical geolocation, reverse geocoding, weather integration, browser notifications, and context-aware automation.
+
 ## New in v3
 - **Saved Places page with a real “Save Place” button**.
 - Save the current GPS location with one click.
