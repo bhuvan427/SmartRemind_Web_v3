@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartRemind — Context-Aware Daily Assistant</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">✦</div><div><b>SmartRemind</b><span>Context-aware assistant</span></div></div>
+  <nav>
+    <button class="nav active" data-view="dashboard">⌂ <span>Dashboard</span></button>
+    <button class="nav" data-view="reminders">◉ <span>Reminders</span></button>
+    <button class="nav" data-view="places">⌖ <span>Places</span></button>
+    <button class="nav" data-view="activity">◷ <span>Activity</span></button>
+  </nav>
+  <div class="sidebar-bottom"><button id="themeBtn" class="nav">◐ <span>Dark mode</span></button><div class="status-pill"><i></i> <span id="monitorStatus">Live context monitoring</span></div></div>
+</aside>
+<main>
+<header class="topbar"><div><p class="eyebrow">TODAY · SMART CONTEXT</p><h1>Good afternoon <span>👋</span></h1><p class="muted">Your location, weather and device status are collected automatically when available.</p></div><button id="locBtn" class="primary">⌖ Refresh location</button></header>
+
+<div id="view-dashboard" class="view">
+<section class="context-grid">
+ <article class="context-card"><div class="card-icon">⌖</div><div><span class="label">CURRENT LOCATION</span><strong id="place">Detecting…</strong><small id="coords">Waiting for GPS permission</small></div><b class="live">LIVE</b></article>
+ <article class="context-card"><div class="card-icon">☁</div><div><span class="label">WEATHER</span><strong id="weather">Detecting…</strong><small id="weatherMeta">—</small></div><b class="live">AUTO</b></article>
+ <article class="context-card"><div class="card-icon">▰</div><div><span class="label">BATTERY</span><strong id="battery">Detecting…</strong><small id="batteryMeta">Browser device status</small></div><b class="live">AUTO</b></article>
+</section>
+<section class="hero-panel"><div><span class="eyebrow">SMART LOCATION ENGINE</span><h2>Reminders that understand <em>where you are.</em></h2><p>SmartRemind combines live location, weather, battery and time. A reminder fires only when every selected condition is satisfied.</p></div><div class="orbit"><div class="orbit-center">✦</div><span>⌖</span><span>☁</span><span>▰</span><span>◷</span></div></section>
+<section class="section-head"><div><h2>Your reminders</h2><p class="muted">Active rules and their current proximity.</p></div><button class="primary" onclick="openReminderModal()">＋ New reminder</button></section>
+<section id="dashboardReminderList" class="reminders"></section>
+</div>
+
+<div id="view-reminders" class="view hidden-view">
+<section class="section-head page-title"><div><p class="eyebrow">REMINDERS</p><h1>Smart reminders</h1><p class="muted">Every rule uses your saved place and automatic context.</p></div><button class="primary" onclick="openReminderModal()">＋ New reminder</button></section>
+<section id="reminderList" class="reminders"></section>
+</div>
+
+<div id="view-places" class="view hidden-view">
+<section class="section-head page-title"><div><p class="eyebrow">LOCATIONS</p><h1>Saved Places</h1><p class="muted">Save a place once and reuse it in any reminder. GPS can fill the village, town, city and coordinates automatically.</p></div><button class="primary" onclick="openPlaceModal()">＋ Save Place</button></section>
+<div class="place-toolbar"><div class="search-wrap"><span>⌕</span><input id="placeSearch" placeholder="Search a city, village, shop or landmark…"><button id="searchPlaceBtn" class="secondary">Find place</button></div><button id="saveCurrentPlaceBtn" class="secondary">⌖ Save my current place</button></div>
+<section id="searchResults" class="search-results"></section>
+<section id="placesList" class="places-grid"></section>
+</div>
+
+<div id="view-activity" class="view hidden-view">
+<section class="page-title"><p class="eyebrow">ACTIVITY</p><h1>Trigger history</h1><p class="muted">Recent context evaluations that resulted in a notification.</p></section>
+<section id="logs" class="logs activity-large"></section>
+</div>
+</main></div>
+
+<div id="modal" class="modal hidden"><div class="modal-card"><button onclick="closeModal('modal')" class="close">×</button><span class="eyebrow">CREATE SMART RULE</span><h2>What should I remind you about?</h2><p class="muted">Choose a saved place or use your current location. Weather and battery are filled automatically.</p>
+<form id="form">
+<label>Task name<input name="task_name" required placeholder="e.g. Buy groceries"></label>
+<label>Place / shop <select name="place_id" id="reminderPlaceSelect"><option value="">Use current location</option></select></label>
+<div class="selected-place" id="selectedPlacePreview">No saved place selected. Your current GPS location will be used.</div>
+<div class="two"><label>Latitude<input name="latitude" id="latInput" type="number" step="any" required></label><label>Longitude<input name="longitude" id="lonInput" type="number" step="any" required></label></div>
+<div class="two"><label>Radius (meters)<input name="radius_m" type="number" value="500" min="10" max="50000"></label><label>Weather condition<select name="weather_condition"><option value="">Any weather</option><option>Clear</option><option>Cloudy</option><option>Rain</option><option>Drizzle</option><option>Thunderstorm</option><option>Fog</option><option>Snow</option></select></label></div>
+<div class="two"><label>Battery trigger<select name="battery_threshold"><option value="">Any battery</option><option value="20">20% or below</option><option value="30">30% or below</option><option value="50">50% or below</option><option value="80">80% or below</option></select></label><label>Time start<input name="time_start" type="time"></label></div>
+<label>Time window end<input name="time_end" type="time"></label>
+<div class="form-actions"><button type="button" id="useCurrent" class="secondary">⌖ Use current location</button><button class="primary" type="submit">Create reminder</button></div>
+</form></div></div>
+
+<div id="placeModal" class="modal hidden"><div class="modal-card"><button onclick="closeModal('placeModal')" class="close">×</button><span class="eyebrow">SAVE LOCATION</span><h2>Save a place</h2><p class="muted">Search for a village, city, shop or landmark, or save your live GPS location.</p>
+<form id="placeForm">
+<label>Place name<input name="place_name" id="savePlaceName" required placeholder="e.g. DMart, Bhimavaram"></label>
+<label>Category<select name="place_type"><option value="Shop / Store">Shop / Store</option><option value="Grocery Store">Grocery Store</option><option value="Pharmacy">Pharmacy</option><option value="Hardware Store">Hardware Store</option><option value="City / Town">City / Town</option><option value="Village">Village</option><option value="Other">Other</option></select></label>
+<div class="two"><label>Latitude<input name="latitude" id="saveLat" type="number" step="any" required></label><label>Longitude<input name="longitude" id="saveLon" type="number" step="any" required></label></div>
+<div class="location-summary" id="savePlaceSummary">Use “Current location” or find a place from the Places page.</div>
+<div class="form-actions"><button type="button" id="saveModalCurrent" class="secondary">⌖ Use current location</button><button class="primary" type="submit">Save Place</button></div>
+</form></div></div>
+<div id="toast" class="toast"></div>
+<script src="/static/app.js"></script>
+</body></html>
