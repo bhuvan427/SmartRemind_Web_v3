@@ -15,32 +15,67 @@ A modern Python/FastAPI + HTML/CSS/JavaScript prototype using **MySQL**. Locatio
 - If an active weather/battery condition cannot be obtained, that condition is treated as **not satisfied** rather than incorrectly firing.
 
 ## Requirements
-- Python 3.10+
-- MySQL 8.x (or compatible MySQL server)
-- Modern browser with Geolocation support
+- Python 3.10 or newer
+- A modern browser with Geolocation support
+- MySQL 8.x or compatible MySQL server for production use (optional for local testing)
 
-## Setup
+## Installation
+
+Clone the repository and enter its directory:
 
 ```bash
+git clone https://github.com/bhuvan427/SmartRemind_Web_v3.git
+cd SmartRemind_Web_v3
+```
+
+Create and activate a virtual environment:
+
+Windows PowerShell:
+```powershell
 python -m venv .venv
+.venv\Scripts\Activate.ps1
 ```
 
-Windows:
+macOS / Linux:
 ```bash
-.venv\Scripts\activate
-```
-
-macOS/Linux:
-```bash
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Install dependencies:
+Install the dependencies listed in `requirements.txt`:
+
 ```bash
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-Copy `.env.example` to `.env` and configure MySQL:
+The dependency list includes:
+- FastAPI: web API framework
+- Uvicorn: application server
+- MySQL Connector/Python: MySQL database support
+- `python-dotenv`: environment configuration
+- HTTPX: weather and geocoding API requests
+
+## Database Configuration
+
+### Option A: SQLite for quick local testing
+
+No database setup is required. If MySQL is unavailable, the app automatically uses `smartremind.sqlite3`. This local database is ignored by Git.
+
+### Option B: MySQL for production
+
+Copy the example configuration file:
+
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell, use:
+```powershell
+Copy-Item .env.example .env
+```
+
+Edit `.env`:
 
 ```env
 MYSQL_HOST=localhost
@@ -50,21 +85,27 @@ MYSQL_PASSWORD=your_mysql_password
 MYSQL_DATABASE=smartremind
 ```
 
-The app creates the database and tables automatically if the MySQL account has permission. Otherwise create the database first:
+The app creates the database and tables automatically when the MySQL account has permission. Otherwise create the database first:
 
 ```sql
 CREATE DATABASE smartremind CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
+Never commit `.env` or database files. They are excluded by `.gitignore`.
+
 ## Run
+
+From the repository directory:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Open:
+Open http://127.0.0.1:8000 in a browser and allow location and notification permissions. For deployment, use:
 
-`http://127.0.0.1:8000`
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
 For browser GPS permissions, localhost is normally allowed. Production deployments should use HTTPS.
 
@@ -94,61 +135,21 @@ Conditions that are left as **Any** are ignored. If a condition is selected but 
 - Browser battery access is not available in every browser. When unavailable, battery-based reminders will not trigger.
 - A normal web page cannot guarantee geofencing after the page is completely closed. Keep the SmartRemind page open for live monitoring in this prototype.
 
-## Install & Contribute (Quick Guide)
+## Contributing
 
-These steps help other developers run the project locally and push the code to GitHub.
-
-1. Create a virtual environment and activate it:
-
-Windows:
-```powershell
-python -m venv .venv
-.venv\Scripts\activate
+1. Create a branch:
+```bash
+git checkout -b feature/your-change
 ```
 
-macOS / Linux:
+2. Test the app locally, then commit your changes:
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Configure database:
-- For local MySQL: copy `.env.example` to `.env` and fill in your values.
-- For quick local testing without MySQL, the app will fall back to a local SQLite database automatically (no config needed). Note: SQLite file is ignored by `.gitignore` and should not be committed.
-
-4. Run the app:
-```bash
-cd SmartRemind
-uvicorn main:app --reload
-# open http://127.0.0.1:8000 in your browser
-```
-
-5. Create a GitHub repository and push your code (two options):
-
-- Using the GitHub website:
-	- Create a new repository on GitHub (do not initialize with README or .gitignore)
-	- Then run locally:
-```bash
-git init
 git add .
-git commit -m "Initial commit"
-git remote add origin git@github.com:YOUR_USERNAME/YOUR_REPO.git
-git branch -M main
-git push -u origin main
+git commit -m "Describe your change"
 ```
 
-- Using the GitHub CLI (`gh`) (authenticated):
+3. Push the branch and open a pull request:
 ```bash
-gh repo create YOUR_USERNAME/YOUR_REPO --public --source=. --remote=origin --push
+git push -u origin feature/your-change
 ```
 
-Notes:
-- `.env` and the local SQLite database are ignored by `.gitignore` to avoid committing secrets or local state.
-- If you want me to create and push the GitHub repo for you, provide a GitHub repo URL or authenticate `gh` in this environment and I can run the `gh` command.
-
-Thanks for preparing this project — happy to help create the remote repo and push if you want me to proceed.
